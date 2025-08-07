@@ -1,23 +1,20 @@
 import socket
 
-HOST = '10.215.212.229'  # Localhost
-PORT = 65432        # Arbitrary non-privileged port
+HOST = 'ie-battery.gl.at.ply.gg'  # The server's hostname or IP address
+PORT = 50621        # The port used by the server
 
-def start_server():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
-        server_socket.bind((HOST, PORT))
-        server_socket.listen()
-        print(f"Server listening on {HOST}:{PORT}")
+def start_client():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
+        client_socket.connect((HOST, PORT))
+        print("Connected to server.")
 
-        conn, addr = server_socket.accept()
-        with conn:
-            print(f"Connected by {addr}")
-            while True:
-                data = conn.recv(1024)
-                if not data:
-                    break
-                print(f"Received: {data.decode()}")
-                conn.sendall(data)  # Echo back to client
+        while True:
+            msg = input("You: ")
+            if msg.lower() == 'exit':
+                break
+            client_socket.sendall(msg.encode())
+            data = client_socket.recv(1024)
+            print(f"Server: {data.decode()}")
 
 if __name__ == "__main__":
-    start_server()
+    start_client()
